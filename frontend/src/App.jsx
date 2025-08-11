@@ -1,11 +1,19 @@
 import "../src/assets/css/style.css";
 import "../src/assets/css/bootstrap.min.css";
 import "../src/assets/css/custom.css";
+import "./styles/animations.css";
 import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PrivateAuthRoute from "./Markup/components/Auth/PrivateAuthRoute";
+import DashboardLayout from "./components/enhanced/DashboardLayout";
+import EnhancedScanPage from "./components/enhanced/EnhancedScanPage";
+import EnhancedDoctorsList from "./components/enhanced/EnhancedDoctorsList";
+import EnhancedNotifications from "./components/enhanced/EnhancedNotifications";
+import EnhancedMedicalRecordForm from "./components/enhanced/EnhancedMedicalRecordForm";
+import EnhancedLoginForm from "./components/enhanced/EnhancedLoginForm";
+import EnhancedHome from "./Markup/pages/EnhancedHome";
 import Activation from "./Markup/pages/Activation";
 import PatientProfileSetting from "./Markup/components/ProfileSetting/PatientProfileSetting";
 import CustomerProfile from "./Markup/components/ProfileSetting/CustomerProfile";
@@ -98,47 +106,38 @@ function App() {
   return (
     <div>
       <ToastContainer />
-      <Routes>
-        <Route path="/activate/*" element={<Activation />} />
-        <Route
-          path="/"
-          element={
-            <>
-              {!isLogged ? (
-                <HeaderFirst />
-              ) : (
-                <>
-                  {userRole === "Doctor" && <DoctorHeader />}
-                  {userRole === "Radiologist" && <RadiologistHeader />}
-                  {userRole === "Specialist" && <SpecialistHeader />}
-                  {userRole !== "Doctor" &&
-                    userRole !== "Radiologist" &&
-                    userRole !== "Specialist" && <Header />}
-                </>
-              )}
-              <Home />
-              <Footer />
-            </>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <>
-              {userRole === "Doctor" && <DoctorHeader />}
-              {userRole === "Radiologist" && <RadiologistHeader />}
-              {userRole === "Specialist" && <SpecialistHeader />}
-              {userRole === "Receptionist" && <ReceptionistHeader />}
-              {userRole !== "Doctor" &&
-                userRole !== "Radiologist" &&
-                userRole !== "Receptionist" &&
-                userRole !== "Specialist" && <Header />}
-              {!isLogged && <HeaderFirst />}
-              <LoginTest />
-              <Footer />
-            </>
-          }
-        />
+      <DashboardLayout>
+        <Routes>
+          <Route path="/activate/*" element={<Activation />} />
+          <Route
+            path="/"
+            element={
+              <>
+                {!isLogged ? (
+                  <>
+                    <HeaderFirst />
+                    <EnhancedHome />
+                    <Footer />
+                  </>
+                ) : (
+                  <>
+                    {userRole === "Doctor" && <DoctorHeader />}
+                    {userRole === "Radiologist" && <RadiologistHeader />}
+                    {userRole === "Specialist" && <SpecialistHeader />}
+                    {userRole !== "Doctor" &&
+                      userRole !== "Radiologist" &&
+                      userRole !== "Specialist" && <Header />}
+                    <Home />
+                    <Footer />
+                  </>
+                )}
+              </>
+            }
+          />
+          <Route
+            path="/login"
+            element={<EnhancedLoginForm />}
+          />
 
         <Route
           path="/add-patient"
@@ -182,13 +181,9 @@ function App() {
         <Route
           path="/record"
           element={
-            <>
-              <DoctorHeader />
-              <PrivateAuthRoute roles={["Doctor"]}>
-                <MedicalRecordsForm />
-              </PrivateAuthRoute>
-              <Footer />
-            </>
+            <PrivateAuthRoute roles={["Doctor"]}>
+              <EnhancedMedicalRecordForm />
+            </PrivateAuthRoute>
           }
         />
         <Route
@@ -267,13 +262,33 @@ function App() {
         <Route
           path="/notifications"
           element={
-            <>
-              <DoctorHeader />
-              <PrivateAuthRoute roles={["Doctor"]}>
-                <NotificationsList />
-              </PrivateAuthRoute>
-              <Footer />
-            </>
+            <PrivateAuthRoute roles={["Doctor"]}>
+              <EnhancedNotifications userRole="Doctor" />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route
+          path="/doctorpatientnotifications"
+          element={
+            <PrivateAuthRoute roles={["Patient"]}>
+              <EnhancedNotifications userRole="Patient" />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route
+          path="/doctorspecialistnotification"
+          element={
+            <PrivateAuthRoute roles={["Specialist"]}>
+              <EnhancedNotifications userRole="Specialist" />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route
+          path="/doctorradiologistnotification"
+          element={
+            <PrivateAuthRoute roles={["Radiologist"]}>
+              <EnhancedNotifications userRole="Radiologist" />
+            </PrivateAuthRoute>
           }
         />
         <Route
@@ -442,13 +457,9 @@ function App() {
         <Route
           path="/doctors"
           element={
-            <>
-              <Header />
-              <PrivateAuthRoute roles={["Patient"]}>
-                <DoctorsList />
-              </PrivateAuthRoute>
-              <Footer />
-            </>
+            <PrivateAuthRoute roles={["Patient"]}>
+              <EnhancedDoctorsList />
+            </PrivateAuthRoute>
           }
         />
         <Route
@@ -603,16 +614,9 @@ function App() {
         <Route
           path="/scan"
           element={
-            <>
-              {userRole === "Doctor" && <DoctorHeader />}
-              {userRole === "Radiologist" && <RadiologistHeader />}
-              {userRole === "Specialist" && <SpecialistHeader />}
-
-              <PrivateAuthRoute roles={["Doctor", "Radiologist", "Specialist"]}>
-                <Scan />
-              </PrivateAuthRoute>
-              <Footer />
-            </>
+            <PrivateAuthRoute roles={["Doctor", "Radiologist", "Specialist"]}>
+              <EnhancedScanPage />
+            </PrivateAuthRoute>
           }
         />
         {/* <Route
@@ -947,7 +951,8 @@ function App() {
             </>
           }
         />
-      </Routes>
+        </Routes>
+      </DashboardLayout>
     </div>
   );
 }
