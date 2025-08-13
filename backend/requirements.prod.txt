@@ -1,0 +1,25 @@
+Django==5.0.4
+asgiref==3.8.1
+sqlparse==0.5.3
+
+# REST framework and auth
+djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
+djoser==2.2.2
+
+# CORS and utils
+django-cors-headers==4.3.1
+dj-database-url==3.0.1
+
+# Media and images
+Pillow==11.3.0
+
+# ML runtime deps used by views for OpenCV/numpy (TensorFlow is lazily imported and not required unless endpoints are used)
+numpy==1.26.4
+opencv-python-headless==4.9.0.80
+
+# Extra fields for DRF
+drf-extra-fields==3.7.0
+
+# Gunicorn server
+gunicorn==22.0.0
