@@ -24,14 +24,12 @@ from rest_framework.response import Response
 from rest_framework.exceptions import MethodNotAllowed
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
-from tensorflow.keras.models import load_model
-from keras.utils import custom_object_scope
-from PIL import Image
+# Delay heavy ML imports until needed
+# from tensorflow.keras.models import load_model
+# from keras.utils import custom_object_scope
 from django.core.files.storage import FileSystemStorage
 from .models import SegmentedImagePredictionTotal
 from .serializers import SegmentedImagePredictionTotalSerializer
-from .custom_losses import bce_dice_loss
-from .custom_metrics import iou_metric
 
 
 def send_email_with_retry(subject, message, from_email, recipient_list, retries=3, delay=5):
@@ -777,6 +775,12 @@ class SegmentedImagePredictionTotalViewSet(ModelViewSet):
             file_path = os.path.join(settings.MEDIA_ROOT, filename)
 
             try:
+                # Lazy import heavy ML modules
+                from tensorflow.keras.models import load_model
+                from keras.utils import custom_object_scope
+                # Lazy import custom objects that depend on TensorFlow
+                from .custom_losses import bce_dice_loss
+                from .custom_metrics import iou_metric
                 # Load segmentation model
                 segmentation_model_path = os.path.join(os.getcwd(), 'model_best_checkpoint.h5')
                 with custom_object_scope({'bce_dice_loss': bce_dice_loss, 'iou_metric': iou_metric}):
